@@ -66,24 +66,30 @@ document.addEventListener("DOMContentLoaded", () => {
         visibility: "visible"
     }, "-=1.5")
     
-    // 4. Animate Hero Text
-    .from(".hero-title", {
-        y: 100,
-        opacity: 0,
+    // 4. Animate Hero Logo and Text
+    .to(".hero-logo-circle", {
+        y: 0,
+        opacity: 1,
         duration: 1.2,
         ease: "power4.out"
     }, "-=0.8")
+    .from(".hero-title", {
+        y: 60,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power4.out"
+    }, "-=1")
     .from(".hero-subtitle", {
         y: 20,
         opacity: 0,
         duration: 1,
         ease: "power3.out"
-    }, "-=0.6")
+    }, "-=0.8")
     .from(".scroll-indicator", {
         opacity: 0,
         duration: 1,
         ease: "power2.out"
-    }, "-=0.5");
+    }, "-=0.6");
 
     // Scroll Animations for Modules
     const modules = gsap.utils.toArray('.module-item');
