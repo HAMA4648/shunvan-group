@@ -132,16 +132,5 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
     
-    // Parallax on hero text
-    gsap.to(".hero-title", {
-        yPercent: -50,
-        opacity: 0,
-        ease: "none",
-        scrollTrigger: {
-            trigger: ".hero",
-            start: "top top",
-            end: "bottom top",
-            scrub: true
-        }
-    });
+    // Hero title stays visible — no scroll fade
 });
