@@ -22,18 +22,21 @@ gsap.ticker.add((time)=>{
 
 gsap.ticker.lagSmoothing(0);
 
-// Cinematic Hero Reveal Animation
+// Main DOM Logic
 document.addEventListener("DOMContentLoaded", () => {
+    
+    // --------------------------------------------------
+    // 1. Cinematic Hero Reveal Animation
+    // --------------------------------------------------
     const tl = gsap.timeline();
 
-    // 1. Draw SVG Logo
     tl.to(".logo-svg", {
         opacity: 1,
         duration: 0.5,
         ease: "power2.inOut"
     })
     .from(".logo-circle", {
-        strokeDasharray: 251, // approx circumference
+        strokeDasharray: 251,
         strokeDashoffset: 251,
         duration: 1.5,
         ease: "power3.inOut"
@@ -45,16 +48,12 @@ document.addEventListener("DOMContentLoaded", () => {
         duration: 1.2,
         ease: "back.out(1.5)"
     }, "-=1")
-    
-    // 2. Reveal Logo Text
     .to(".logo-text", {
         opacity: 1,
         duration: 1,
         y: -20,
         ease: "power2.out"
     }, "-=0.5")
-
-    // 3. Hold for a moment, then fade out loader and reveal main content
     .to(".loader", {
         y: "-100%",
         duration: 1.5,
@@ -65,8 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
         opacity: 1,
         visibility: "visible"
     }, "-=1.5")
-    
-    // 4. Animate Hero Logo and Text
     .to(".hero-logo-circle", {
         y: 0,
         opacity: 1,
@@ -91,7 +88,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ease: "power2.out"
     }, "-=0.6");
 
-    // Scroll Animations for Modules
+
+    // --------------------------------------------------
+    // 2. Module Grid Scroll Animations
+    // --------------------------------------------------
     const modules = gsap.utils.toArray('.module-item');
 
     modules.forEach((module, i) => {
@@ -99,11 +99,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const image = module.querySelector('.module-image');
         const button = module.querySelector('.module-btn');
 
-        // Initial state
         gsap.set(imageContainer, { y: 100, opacity: 0 });
         gsap.set(button, { y: 30, opacity: 0 });
 
-        // Scroll trigger for entrance
         ScrollTrigger.create({
             trigger: module,
             start: "top 85%",
@@ -122,61 +120,48 @@ document.addEventListener("DOMContentLoaded", () => {
                 }, "-=0.8")
         });
 
-        // Gentle oscillating float animation for icons
         gsap.to(image, {
             y: -20,
-            duration: 2.5 + (i * 0.2), // slight variance based on index
+            duration: 2.5 + (i * 0.2),
             ease: "sine.inOut",
             yoyo: true,
             repeat: -1
         });
     });
-    
-    // Hero title stays visible — no scroll fade
-});
 
-// --------------------------------------------------
-// PRODUCT OVERLAY & RECURSIVE GALLERY LOGIC
-// --------------------------------------------------
 
-document.addEventListener("DOMContentLoaded", () => {
+    // --------------------------------------------------
+    // 3. PRODUCT OVERLAY & GALLERY LOGIC
+    // --------------------------------------------------
     const productBtn = document.querySelector("#module-product .module-btn");
-    const overlay = document.querySelector("#product-overlay");
-    const closeBtn = document.querySelector("#close-product-btn");
+    const productOverlay = document.querySelector("#product-overlay");
+    const productCloseBtn = document.querySelector("#close-product-btn");
+    const productGalleryTrack = document.querySelector("#product-gallery");
+    const activeProductBg = document.querySelector("#active-product-bg");
+    const activeProductTitle = document.querySelector("#active-project-title");
     const mainContent = document.querySelector(".main-content");
-    const galleryTrack = document.querySelector("#product-gallery");
-    const activeBg = document.querySelector("#active-product-bg");
-    const activeTitle = document.querySelector("#active-project-title");
 
-    // Sub-projects data (using placeholders for now)
     const subProjects = [
         { title: "Residential Complex", image: "assets/images/module_design.png" },
         { title: "Minimalist Pavilion", image: "assets/images/module_light.png" },
         { title: "Urban Development", image: "assets/images/module_product.png" }
     ];
 
-    // Populate gallery
-    subProjects.forEach((project, index) => {
+    subProjects.forEach((project) => {
         const item = document.createElement('div');
         item.className = 'gallery-item';
-        item.innerHTML = `
-            <img src="${project.image}" alt="${project.title}" class="gallery-thumb">
-            <div class="gallery-item-overlay"></div>
-        `;
+        item.innerHTML = `<img src="${project.image}" alt="${project.title}" class="gallery-thumb"><div class="gallery-item-overlay"></div>`;
         
-        // Recursive Click Interaction
         item.addEventListener("click", () => {
-            // Crossfade effect for background
-            const newBg = activeBg.cloneNode();
+            const newBg = activeProductBg.cloneNode();
             newBg.src = project.image;
             newBg.style.opacity = 0;
             newBg.style.transform = "scale(1.1)";
             newBg.style.position = "absolute";
             newBg.style.top = "0";
             newBg.style.left = "0";
-            newBg.id = ""; // remove id from clone
-            
-            activeBg.parentNode.insertBefore(newBg, activeBg.nextSibling);
+            newBg.id = "";
+            activeProductBg.parentNode.insertBefore(newBg, activeProductBg.nextSibling);
 
             gsap.to(newBg, {
                 opacity: 1,
@@ -184,99 +169,102 @@ document.addEventListener("DOMContentLoaded", () => {
                 duration: 1.2,
                 ease: "power2.inOut",
                 onComplete: () => {
-                    activeBg.src = project.image;
+                    activeProductBg.src = project.image;
                     newBg.remove();
                 }
             });
 
-            // Update title
-            gsap.to(activeTitle, {
-                opacity: 0,
-                y: -10,
-                duration: 0.4,
+            gsap.to(activeProductTitle, {
+                opacity: 0, y: -10, duration: 0.4,
                 onComplete: () => {
-                    activeTitle.textContent = project.title;
-                    gsap.to(activeTitle, { opacity: 1, y: 0, duration: 0.4 });
+                    activeProductTitle.textContent = project.title;
+                    gsap.to(activeProductTitle, { opacity: 1, y: 0, duration: 0.4 });
                 }
             });
         });
-
-        galleryTrack.appendChild(item);
+        productGalleryTrack.appendChild(item);
     });
 
-    // Enter Overlay Animation
     productBtn.addEventListener("click", () => {
-        lenis.stop(); // Pause scrolling
-
-        const tl = gsap.timeline();
-
-        // Fade out main content
-        tl.to(mainContent, {
-            opacity: 0,
-            duration: 0.6,
-            ease: "power2.inOut"
-        })
-        // Show overlay container
-        .set(overlay, {
-            visibility: "visible",
-            pointerEvents: "all"
-        })
-        .to(overlay, {
-            opacity: 1,
-            duration: 0.6,
-            ease: "power2.inOut"
-        }, "-=0.3")
-        // Expand background image
-        .to(activeBg, {
-            scale: 1,
-            duration: 1.5,
-            ease: "power3.out"
-        }, "-=0.6")
-        // Stagger fade in gallery items and UI
-        .from(".overlay-header", {
-            y: -30,
-            opacity: 0,
-            duration: 0.8,
-            ease: "power3.out"
-        }, "-=1")
-        .from(".gallery-label", {
-            y: 20,
-            opacity: 0,
-            duration: 0.5,
-            ease: "power2.out"
-        }, "-=0.8")
-        .from(".gallery-item", {
-            y: 50,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: "back.out(1.2)"
-        }, "-=0.6");
+        lenis.stop();
+        const tlP = gsap.timeline();
+        tlP.to(mainContent, { opacity: 0, duration: 0.6 })
+           .set(productOverlay, { visibility: "visible", pointerEvents: "all" })
+           .to(productOverlay, { opacity: 1, duration: 0.6 }, "-=0.3")
+           .to(activeProductBg, { scale: 1, duration: 1.5, ease: "power3.out" }, "-=0.6")
+           .from("#product-overlay .overlay-header", { y: -30, opacity: 0, duration: 0.8 }, "-=1")
+           .from("#product-overlay .gallery-container", { y: 30, opacity: 0, duration: 0.8 }, "-=0.8");
     });
 
-    // Exit Overlay Animation
-    closeBtn.addEventListener("click", () => {
-        const tl = gsap.timeline({
-            onComplete: () => {
-                lenis.start(); // Resume scrolling
-                gsap.set(activeBg, { scale: 1.2 }); // Reset scale for next time
-                gsap.set([".overlay-header", ".gallery-label", ".gallery-item"], { clearProps: "all" });
-            }
-        });
-
-        tl.to(overlay, {
-            opacity: 0,
-            duration: 0.6,
-            ease: "power2.inOut"
-        })
-        .set(overlay, {
-            visibility: "hidden",
-            pointerEvents: "none"
-        })
-        .to(mainContent, {
-            opacity: 1,
-            duration: 0.8,
-            ease: "power2.inOut"
-        }, "-=0.2");
+    productCloseBtn.addEventListener("click", () => {
+        gsap.timeline({ onComplete: () => { lenis.start(); gsap.set(activeProductBg, { scale: 1.2 }); }})
+            .to(productOverlay, { opacity: 0, duration: 0.6 })
+            .set(productOverlay, { visibility: "hidden", pointerEvents: "none" })
+            .to(mainContent, { opacity: 1, duration: 0.8 }, "-=0.2");
     });
+
+
+    // --------------------------------------------------
+    // 4. DESIGN OVERLAY & BLUEPRINT LOGIC
+    // --------------------------------------------------
+    const designBtn = document.querySelector("#module-design .module-btn");
+    const designOverlay = document.querySelector("#design-overlay");
+    const designCloseBtn = document.querySelector("#close-design-btn");
+    const svgContainer = document.querySelector("#blueprint-svg-container");
+    const designGalleryTrack = document.querySelector("#design-gallery");
+    const designHint = document.querySelector(".reveal-hint");
+
+    async function initBlueprint() {
+        try {
+            const response = await fetch('assets/images/blueprint.svg');
+            const svgText = await response.text();
+            svgContainer.innerHTML = svgText;
+            const paths = svgContainer.querySelectorAll('path');
+            paths.forEach(path => {
+                const length = path.getTotalLength();
+                gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
+            });
+        } catch (e) { console.error("SVG Load Error", e); }
+    }
+    initBlueprint();
+
+    const designProjects = [
+        { title: "Museo Castromaior", image: "assets/images/module_design.png" },
+        { title: "Cultural Center", image: "assets/images/module_product.png" },
+        { title: "Civic Pavilion", image: "assets/images/module_light.png" }
+    ];
+
+    designProjects.forEach(p => {
+        const item = document.createElement('div');
+        item.className = 'gallery-item';
+        item.innerHTML = `<img src="${p.image}" alt="${p.title}" class="gallery-thumb"><div class="gallery-item-overlay"></div>`;
+        designGalleryTrack.appendChild(item);
+    });
+
+    designBtn.addEventListener("click", () => {
+        lenis.stop();
+        const paths = svgContainer.querySelectorAll('path');
+        const tlD = gsap.timeline();
+        tlD.to(mainContent, { opacity: 0, duration: 0.6 })
+           .set(designOverlay, { visibility: "visible", pointerEvents: "all" })
+           .to(designOverlay, { opacity: 1, duration: 0.6 }, "-=0.3")
+           .to(paths, { strokeDashoffset: 0, duration: 3, stagger: 0.05, ease: "power2.inOut" })
+           .from("#design-overlay .overlay-header", { y: -30, opacity: 0, duration: 0.8 }, "-=1")
+           .to(designHint, { opacity: 1, duration: 1 }, "-=0.5")
+           .from("#design-overlay .gallery-container", { y: 30, opacity: 0, duration: 0.8 }, "-=0.8");
+    });
+
+    designCloseBtn.addEventListener("click", () => {
+        const paths = svgContainer.querySelectorAll('path');
+        gsap.timeline({ onComplete: () => {
+            lenis.start();
+            paths.forEach(p => { gsap.set(p, { strokeDashoffset: p.getTotalLength() }); });
+            gsap.set("#design-overlay .render-image", { opacity: 0 });
+        }})
+        .to(paths, { strokeDashoffset: (i, t) => t.getTotalLength(), duration: 1.5, ease: "power2.in" })
+        .to(designOverlay, { opacity: 0, duration: 0.6 }, "-=0.5")
+        .set(designOverlay, { visibility: "hidden", pointerEvents: "none" })
+        .to(mainContent, { opacity: 1, duration: 0.8 }, "-=0.2");
+    });
+
 });

@@ -441,6 +441,73 @@ html.lenis {
     background-color: rgba(47, 41, 38, 0.1);
 }
 
+/* Design Overlay - Blueprint to Reality */
+.interactive-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+
+#blueprint-svg-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#blueprint-svg-container svg {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
+
+#blueprint-svg-container path {
+    stroke: var(--color-light-sage);
+    stroke-width: 1px;
+    fill: none;
+    /* Will-change for GSAP animation */
+    will-change: stroke-dashoffset;
+}
+
+.render-image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+}
+
+.interactive-container:hover .render-image {
+    opacity: 1;
+}
+
+.reveal-hint {
+    position: absolute;
+    bottom: -3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--color-muted-olive);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.interactive-container:hover .reveal-hint {
+    opacity: 0; /* Hide hint on hover */
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .modules-grid {
